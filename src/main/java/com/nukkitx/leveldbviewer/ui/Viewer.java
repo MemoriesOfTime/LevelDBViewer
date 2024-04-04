@@ -276,12 +276,12 @@ public class Viewer {
                 try (ByteArrayInputStream inputStream = new ByteArrayInputStream(item.value);
                      NBTInputStream stream = NbtUtils.createReaderLE(inputStream);
                      LittleEndianDataInputStream dataInput = new LittleEndianDataInputStream(inputStream)) {
-                    if (item.dbKey == LevelDBKey.SUBCHUNK_PREFIX) {
+                    if (item.dbKey == LevelDBKey.CHUNK_SECTION_PREFIX) {
                         int ver = dataInput.readByte();
                         //TODO
                         complexValue.setText("version: " + ver + "\nTODO");
                         complexValue.setVisible(true);
-                    } else if (item.dbKey == LevelDBKey.HEIGHTMAP_AND_3D_BIOMES) {
+                    } else if (item.dbKey == LevelDBKey.DATA_3D) {
                         short[][] heightmap = new short[16][16];
                         for (int x = 0; x < 16; x++) {
                             for (int z = 0; z < 16; z++) {
@@ -295,10 +295,10 @@ public class Viewer {
                         //TODO
                         complexValue.setText("heightmap:\n" + joiner + "\n--------------------------------------------\nbiome:\nTODO");
                         complexValue.setVisible(true);
-                    } else if (item.dbKey == LevelDBKey.FINALIZATION) {
+                    } else if (item.dbKey == LevelDBKey.STATE_FINALIZATION) {
                         complexValue.setText(String.valueOf(dataInput.readInt()));
                         complexValue.setVisible(true);
-                    } else if (item.dbKey == LevelDBKey.META_DATA_HASH) {
+                    } else if (item.dbKey == LevelDBKey.DATA_2D) {
                         long hash = dataInput.readLong();
                         complexValue.setText(Long.toUnsignedString(hash));
                         complexValue.setVisible(true);
@@ -319,7 +319,7 @@ public class Viewer {
                 }
                 try (ByteArrayInputStream inputStream = new ByteArrayInputStream(item.value);
                      NBTInputStream stream = NbtUtils.createReaderLE(inputStream)) {
-                    if (item.dbKey == LevelDBKey.SUBCHUNK_PREFIX) {
+                    if (item.dbKey == LevelDBKey.CHUNK_SECTION_PREFIX) {
                         throw new UnsupportedOperationException();
                     }
                     StringJoiner joiner = new StringJoiner("\n--------------------------------------------\n");

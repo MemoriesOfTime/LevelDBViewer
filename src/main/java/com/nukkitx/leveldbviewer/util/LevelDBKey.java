@@ -3,17 +3,20 @@ package com.nukkitx.leveldbviewer.util;
 import java.util.Arrays;
 
 public enum LevelDBKey {
-    HEIGHTMAP_AND_3D_BIOMES('+'),
-    NEW_VERSION(','), // since 1.16.100?
-    HEIGHTMAP_AND_2D_BIOMES('-'), // obsolete since 1.18
-    HEIGHTMAP_AND_2D_BIOME_COLORS('.'), // obsolete since 1.0
-    LEGACY_TERRAIN('0'), // obsolete since 1.0
+    DATA_3D('+'),
+    DATA_2D('-'),
+    DATA_2D_LEGACY('.'),
+    /**
+     * Block data for a 16×16×16 chunk section
+     */
+    CHUNK_SECTION_PREFIX('/'),
+    LEGACY_TERRAIN('0'),
     BLOCK_ENTITIES('1'),
     ENTITIES('2'),
-    PENDING_SCHEDULED_TICKS('3'),
-    LEGACY_BLOCK_EXTRA_DATA('4'), // obsolete since 1.2.13
-    BIOME_STATES('5'), //TODO: is this still applicable to 1.18.0?
-    FINALIZATION('6'),
+    PENDING_TICKS('3'),
+    BLOCK_EXTRA_DATA('4'),
+    BIOME_STATE('5'),
+    STATE_FINALIZATION('6'),
     CONVERTER_TAG('7'), // ???
     BORDER_BLOCKS('8'),
     HARDCODED_SPAWNERS('9'),
@@ -22,13 +25,12 @@ public enum LevelDBKey {
     GENERATION_SEED('<'),
     GENERATED_BEFORE_CNC_BLENDING('='),
     BLENDING_BIOME_HEIGHT('>'),
-    OLD_VERSION('v'),
     META_DATA_HASH('?'),
     BLENDING_DATA('@'),
     ENTITY_DIGEST_VERSION('A'), // since 1.18.30
-    @Deprecated
-    NUKKIT_DATA('f'), //TODO
-    SUBCHUNK_PREFIX('/'),
+    FLAGS('f'),
+    VERSION_OLD('v'),
+    VERSION(',')
     ;
 
     private static final LevelDBKey[] VALUES;
@@ -46,8 +48,8 @@ public enum LevelDBKey {
 
     public static LevelDBKey fromBytes(byte[] key) {
         if (key.length == 14) {
-            if (key[12] == SUBCHUNK_PREFIX.encoded) {
-                return SUBCHUNK_PREFIX;
+            if (key[12] == CHUNK_SECTION_PREFIX.encoded) {
+                return CHUNK_SECTION_PREFIX;
             }
             return null;
         }
@@ -60,8 +62,8 @@ public enum LevelDBKey {
             return null;
         }
         if (key.length == 10) {
-            if (key[8] == SUBCHUNK_PREFIX.encoded) {
-                return SUBCHUNK_PREFIX;
+            if (key[8] == CHUNK_SECTION_PREFIX.encoded) {
+                return CHUNK_SECTION_PREFIX;
             }
             return null;
         }
@@ -103,7 +105,7 @@ public enum LevelDBKey {
 
     public String toString(byte[] key) {
         String toString = "(" + getChunkX(key) + ", " + getChunkZ(key);
-        if (this == LevelDBKey.SUBCHUNK_PREFIX) {
+        if (this == LevelDBKey.CHUNK_SECTION_PREFIX) {
             toString += " | " + getSubChunkY(key);
         }
         return toString + "): " + name();
